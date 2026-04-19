@@ -3,12 +3,13 @@
 const { Pool } = require('pg');
 const { DATABASE_URL } = require('./env');
 
-// Parse the connection string manually to allow SSL override
+// Strip sslmode from connection string so pg doesn't override our ssl config
+const connectionString = DATABASE_URL.replace(/[?&]sslmode=[^&]*/g, '');
+
 const pool = new Pool({
-  connectionString: DATABASE_URL,
+  connectionString,
   ssl: {
     rejectUnauthorized: false,
-    checkServerIdentity: () => undefined,
   },
 });
 
